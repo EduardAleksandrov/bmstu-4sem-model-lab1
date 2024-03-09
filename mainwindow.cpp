@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    fobj = new Funcs(this, 0, 8); // задаем n, m
+    fobj = new Funcs(this, 5, 8); // задаем n, m
     fobj->func_cdf = func_cdf;
     fobj->func_pdf = func_pdf;
     qDebug() << fobj->getN() << " " << fobj->getM() << fobj->func_cdf(8)<< " "<< fobj->func_pdf(fobj->func_cdf,8,0.002);
@@ -26,7 +26,8 @@ MainWindow::~MainWindow()
 
 double MainWindow::func_cdf(double x)
 {
-    double f = pow(x,2)/64;
+//    double f = pow(x,2)/64;
+    double f = (x-5)/(8-5);
     return f;
 }
 
@@ -50,7 +51,7 @@ void MainWindow::on_pushButton_clicked()
         ui->textBrowser->setText("Введите диапазон");
         return;
     }
-    if(aa == 0 && bb == 0)
+    if(aa == bb)
     {
         ui->textBrowser->setText("Введите диапазон");
         return;
@@ -64,7 +65,7 @@ void MainWindow::on_pushButton_clicked()
     double i = fobj->getN();
     double j = fobj->getM();
     double h = 0.1; //Шаг, с которым будем пробегать по оси Ox
-    int N = (j - i) / h + 2;//Вычисляем количество точек, которые будем отрисовывать
+    int N = (j - i) / h+1;//Вычисляем количество точек, которые будем отрисовывать
     QVector<double> x(N);
     QVector<double> y(N);
     //Вычисляем наши данные
@@ -86,8 +87,9 @@ void MainWindow::on_pushButton_clicked()
         xx[ii] = X;
         yy[ii] = fobj->func_pdf(fobj->func_cdf,X,0.002);
         ii++;
-//        qDebug() << y[ii];
+//        qDebug() << xx[ii-1] << " "<< yy[ii-1];
     }
+
     show_pdf(xx, yy, aa, bb);
 }
 
@@ -114,6 +116,12 @@ void MainWindow::show_cdf(QVector<double> x, QVector<double> y, double a, double
 
     //Говорим, что отрисовать нужно график по нашим двум массивам x и y
     ui->widget_cdf->graph(0)->setData(x, y);
+//    ui->widget_cdf->graph(0)->setPen(QColor(50, 50, 50, 255));//задаем цвет точки
+//    ui->widget_cdf->graph(0)->setLineStyle(QCPGraph::lsNone);//убираем линии
+
+    //формируем вид точек
+//    ui->widget_cdf->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 4));
+
 
     //Подписываем оси Ox и Oy
     ui->widget_cdf->xAxis->setLabel("x");
@@ -130,6 +138,7 @@ void MainWindow::show_cdf(QVector<double> x, QVector<double> y, double a, double
       if (y[i] < minY) minY = y[i];
       if (y[i] > maxY) maxY = y[i];
     }
+    if(floor( minY*100 )/100 == floor( maxY*100 )/100) minY = 0.0;
     ui->widget_cdf->yAxis->setRange(minY, maxY);//Для оси Oy
 
     //И перерисуем график на нашем widget
@@ -146,6 +155,12 @@ void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double
 
     //Говорим, что отрисовать нужно график по нашим двум массивам x и y
     ui->widget_pdf->graph(0)->setData(x, y);
+//    ui->widget_pdf->graph(0)->setPen(QColor(50, 50, 50, 255));//задаем цвет точки
+//    ui->widget_pdf->graph(0)->setLineStyle(QCPGraph::lsNone);//убираем линии
+
+    //формируем вид точек
+//    ui->widget_pdf->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 4));
+
 
     //Подписываем оси Ox и Oy
     ui->widget_pdf->xAxis->setLabel("x");
@@ -162,6 +177,7 @@ void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double
       if (y[i] < minY) minY = y[i];
       if (y[i] > maxY) maxY = y[i];
     }
+    if(floor( minY*100 )/100 == floor( maxY*100 )/100) minY = 0.0;
     ui->widget_pdf->yAxis->setRange(minY, maxY);//Для оси Oy
 
     //И перерисуем график на нашем widget
