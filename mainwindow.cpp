@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     fobj = new Funcs(this); // задаем n, m
     fobj->func_cdf = func_cdf;
     fobj->func_pdf = func_pdf;
+    fobj->func_erlang_cdf = func_erlang_cdf;
 //    qDebug() << fobj->getN() << " " << fobj->getM() << fobj->func_cdf(8)<< " "<< fobj->func_pdf(fobj->func_cdf,8,0.002);
 }
 
@@ -37,6 +38,24 @@ double MainWindow::func_pdf(double fun(double), double x, double h)
     return f;
 }
 
+double MainWindow::func_erlang_cdf(double x, int k, double labda)
+{
+    double sum {0};
+    double temp = labda*x;
+    for(int n = 0; n <= k-1; n++)
+    {
+         sum+=(1/factorial(n))*exp(-labda*x)*pow(temp,n);
+    }
+    double f = 1 - sum;
+    return f;
+}
+
+int MainWindow::factorial(int num)
+{
+    if (num == 0) return 1;
+    else return(num * factorial(num - 1));
+}
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -48,7 +67,7 @@ void MainWindow::on_pushButton_clicked()
     QString b = ui->lineEdit_2->text();
     double aa = a.toDouble();
     double bb = b.toDouble();
-    qDebug() << aa << " " << bb;
+//    qDebug() << aa << " " << bb;
     if(a == "" || b == "")
     {
         ui->textBrowser->setText("Введите диапазон");
@@ -148,7 +167,6 @@ void MainWindow::show_cdf(QVector<double> x, QVector<double> y, double a, double
     ui->widget_cdf->replot();
 }
 
-
 void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double b)
 {
     ui->widget_pdf->clearGraphs();//Если нужно, но очищаем все графики
@@ -186,3 +204,63 @@ void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double
     //И перерисуем график на нашем widget
     ui->widget_pdf->replot();
 }
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    fobj->setN(0);
+    fobj->setM(20);
+
+    ui->textBrowser->clear();
+    QString a = ui->lineEdit->text();
+    QString b = ui->lineEdit_2->text();
+    double aa = a.toDouble();
+    double bb = b.toDouble();
+//    qDebug() << aa << " " << bb;
+    if(a == "" || b == "")
+    {
+        ui->textBrowser->setText("Введите диапазон");
+        return;
+    }
+    if(aa == bb)
+    {
+        ui->textBrowser->setText("Введите диапазон");
+        return;
+    }
+    if(aa>bb)
+    {
+        ui->textBrowser->setText("Введите диапазон правильно");
+        return;
+    }
+    QString k = ui->lineEdit_3->text();
+    QString labda = ui->lineEdit_4->text();
+    int kk = k.toInt();
+    double llabda = labda.toDouble();
+    if(kk < 1)
+    {
+        ui->textBrowser->setText("Введите k >= 1");
+        return;
+    }
+    if(llabda <= 0.0)
+    {
+        ui->textBrowser->setText("Введите labda > 0");
+        return;
+    }
+
+    double i = fobj->getN();
+    double j = fobj->getM();
+    double h = 0.1; //Шаг, с которым будем пробегать по оси Ox
+    int N = (j - i) / h+1;//Вычисляем количество точек, которые будем отрисовывать
+    QVector<double> x(N);
+    QVector<double> y(N);
+    //Вычисляем наши данные
+    int ii=0;
+    //Пробегаем по всем точкам
+    for (double X = i; X <= j; X += h) {
+        x[ii] = X;
+        y[ii] = fobj->func_erlang_cdf(X, kk, llabda);
+        ii++;
+    }
+    show_cdf(x, y, aa, bb);
+
+}
+

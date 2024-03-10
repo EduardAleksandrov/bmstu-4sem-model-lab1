@@ -26,3 +26,5 @@ void Funcs::setM(double mm)
 {
     m = mm;
 }
+
+

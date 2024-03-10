@@ -17,6 +17,9 @@ public:
     void setN(double);
     void setM(double);
 
+
+    double (*func_erlang_cdf)(double, int, double);
+
 signals:
 
 private:
