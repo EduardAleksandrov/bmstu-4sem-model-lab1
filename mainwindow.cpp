@@ -26,8 +26,8 @@ MainWindow::~MainWindow()
 
 double MainWindow::func_cdf(double x)
 {
-//    double f = pow(x,2)/64; // 0 8
-    double f = (x-5)/(8-5);   // 5 8
+    double f = pow(x,2)/64; // 0 8
+//    double f = (x-5)/(8-5);   // 5 8
     return f;
 }
 
@@ -64,7 +64,7 @@ int MainWindow::factorial(int num)
 
 void MainWindow::on_pushButton_clicked()
 {
-    fobj->setN(5);
+    fobj->setN(0);
     fobj->setM(8);
 
     ui->textBrowser->clear();
@@ -88,33 +88,62 @@ void MainWindow::on_pushButton_clicked()
         ui->textBrowser->setText("Введите диапазон правильно");
         return;
     }
+    if(bb-aa < 0.01)
+    {
+        ui->textBrowser->setText("Диапазон слишком мал");
+        return;
+    }
 
-    double i = fobj->getN();
-    double j = fobj->getM();
+//    double i = fobj->getN();
+//    double j = fobj->getM();
+    double i = aa;
+    double j = bb;
     double h = 0.01; //Шаг, с которым будем пробегать по оси Ox
-    int N = (j - i) / h+1;//Вычисляем количество точек, которые будем отрисовывать
-    QVector<double> x(N);
-    QVector<double> y(N);
+//    int N = (j - i) / h+1;//Вычисляем количество точек, которые будем отрисовывать
+    QVector<double> x;
+    QVector<double> y;
     //Вычисляем наши данные
-    int ii=0;
+//    int ii=0;
     //Пробегаем по всем точкам
-    for (double X = i; X <= j; X += h) {
-        x[ii] = X;
-        y[ii] = fobj->func_cdf(X);
-        ii++;
+//    for (double X = i; X <= j; X += h) {
+//        x[ii] = X;
+//        if(X<=fobj->getN()) y[ii] = 0;
+//        else if(X>=fobj->getM()) y[ii] = 1;
+//        else y[ii] = fobj->func_cdf(X);
+//        ii++;
+//    }
+    double X = i;
+    while(X <= j)
+    {
+        x.push_back(X);
+        if(X<=fobj->getN()) y.push_back(0);
+        else if(X>=fobj->getM()) y.push_back(1);
+        else y.push_back(fobj->func_cdf(X));
+        X += h;
     }
     show_cdf(x, y, aa, bb);
 
-    QVector<double> xx(N);
-    QVector<double> yy(N);
+    QVector<double> xx;
+    QVector<double> yy;
     //Вычисляем наши данные
-    ii=0;
+//    ii=0;
     //Пробегаем по всем точкам
-    for (double X = i; X <= j; X += h) {
-        xx[ii] = X;
-        yy[ii] = fobj->func_pdf(fobj->func_cdf,X,0.002);
-        ii++;
-//        qDebug() << xx[ii-1] << " "<< yy[ii-1];
+//    for (double X = i; X <= j; X += h) {
+//        xx[ii] = X;
+//        if(X<=fobj->getN()) yy[ii] = 0;
+//        else if(X>=fobj->getM()) yy[ii] = 0;
+//        else yy[ii] = fobj->func_pdf(fobj->func_cdf,X,0.002);
+//        ii++;
+////        qDebug() << xx[ii-1] << " "<< yy[ii-1];
+//    }
+    X = i;
+    while(X <= j)
+    {
+        xx.push_back(X);
+        if(X<=fobj->getN()) yy.push_back(0);
+        else if(X>=fobj->getM()) yy.push_back(0);
+        else yy.push_back(fobj->func_pdf(fobj->func_cdf,X,0.002));
+        X += h;
     }
 
     show_pdf(xx, yy, aa, bb);
