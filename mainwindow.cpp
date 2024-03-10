@@ -26,8 +26,8 @@ MainWindow::~MainWindow()
 
 double MainWindow::func_cdf(double x)
 {
-//    double f = pow(x,2)/64;
-    double f = (x-5)/(8-5);
+//    double f = pow(x,2)/64; // 0 8
+    double f = (x-5)/(8-5);   // 5 8
     return f;
 }
 
@@ -91,7 +91,7 @@ void MainWindow::on_pushButton_clicked()
 
     double i = fobj->getN();
     double j = fobj->getM();
-    double h = 0.1; //Шаг, с которым будем пробегать по оси Ox
+    double h = 0.01; //Шаг, с которым будем пробегать по оси Ox
     int N = (j - i) / h+1;//Вычисляем количество точек, которые будем отрисовывать
     QVector<double> x(N);
     QVector<double> y(N);
@@ -152,7 +152,7 @@ void MainWindow::show_cdf(QVector<double> x, QVector<double> y, double a, double
 
     //Подписываем оси Ox и Oy
     ui->widget_cdf->xAxis->setLabel("x");
-    ui->widget_cdf->yAxis->setLabel("y");
+    ui->widget_cdf->yAxis->setLabel("F(x)");
 
     //Установим область, которая будет показываться на графике
     ui->widget_cdf->xAxis->setRange(a, b);//Для оси Ox
@@ -190,7 +190,7 @@ void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double
 
     //Подписываем оси Ox и Oy
     ui->widget_pdf->xAxis->setLabel("x");
-    ui->widget_pdf->yAxis->setLabel("y");
+    ui->widget_pdf->yAxis->setLabel("f(x)");
 
     //Установим область, которая будет показываться на графике
     ui->widget_pdf->xAxis->setRange(a, b);//Для оси Ox
@@ -213,7 +213,7 @@ void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double
 void MainWindow::on_pushButton_2_clicked()
 {
     fobj->setN(0.01);
-    fobj->setM(20.01);
+    fobj->setM(20);
 
     ui->textBrowser->clear();
     QString a = ui->lineEdit->text();
@@ -247,7 +247,7 @@ void MainWindow::on_pushButton_2_clicked()
     double llambda = lambda.toDouble();
     if(kk < 1)
     {
-        ui->textBrowser->setText("Введите k >= 1");
+        ui->textBrowser->setText("Введите k >= 1, натуральные");
         return;
     }
     if(llambda <= 0.0)
@@ -258,7 +258,7 @@ void MainWindow::on_pushButton_2_clicked()
 
     double i = fobj->getN();
     double j = fobj->getM();
-    double h = 0.1; //Шаг, с которым будем пробегать по оси Ox
+    double h = 0.01; //Шаг, с которым будем пробегать по оси Ox
     int N = (j - i) / h+1;//Вычисляем количество точек, которые будем отрисовывать
     QVector<double> x(N);
     QVector<double> y(N);
