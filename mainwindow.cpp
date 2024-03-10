@@ -5,8 +5,6 @@
 #include <cmath>
 #include <vector>
 
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -17,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     fobj->func_cdf = func_cdf;
     fobj->func_pdf = func_pdf;
     fobj->func_erlang_cdf = func_erlang_cdf;
+    fobj->func_erlang_pdf = func_erlang_pdf;
 //    qDebug() << fobj->getN() << " " << fobj->getM() << fobj->func_cdf(8)<< " "<< fobj->func_pdf(fobj->func_cdf,8,0.002);
 }
 
@@ -38,15 +37,21 @@ double MainWindow::func_pdf(double fun(double), double x, double h)
     return f;
 }
 
-double MainWindow::func_erlang_cdf(double x, int k, double labda)
+double MainWindow::func_erlang_cdf(double x, int k, double lambda)
 {
     double sum {0};
-    double temp = labda*x;
     for(int n = 0; n <= k-1; n++)
     {
-         sum+=(1/factorial(n))*exp(-labda*x)*pow(temp,n);
+        sum+=exp(-1.0*lambda*x)*pow(lambda*x,n)/factorial(n);
     }
-    double f = 1 - sum;
+    double f = 1.0 - sum;
+    return f;
+}
+
+double MainWindow::func_erlang_pdf(double fun(double, int, double), double x, double h, int k, double lambda)
+{
+    double f = (fun(x+h, k, lambda)-fun(x, k, lambda))/h;
+//    double f = (pow(lambda,k)*pow(x, k-1)*exp(-1.0*lambda*x))/factorial(k-1);
     return f;
 }
 
@@ -207,8 +212,8 @@ void MainWindow::show_pdf(QVector<double> x, QVector<double> y, double a, double
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    fobj->setN(0);
-    fobj->setM(20);
+    fobj->setN(0.01);
+    fobj->setM(20.01);
 
     ui->textBrowser->clear();
     QString a = ui->lineEdit->text();
@@ -231,18 +236,23 @@ void MainWindow::on_pushButton_2_clicked()
         ui->textBrowser->setText("Введите диапазон правильно");
         return;
     }
+    if(aa<0)
+    {
+        ui->textBrowser->setText("a должен быть больше или равен нулю");
+        return;
+    }
     QString k = ui->lineEdit_3->text();
-    QString labda = ui->lineEdit_4->text();
+    QString lambda = ui->lineEdit_4->text();
     int kk = k.toInt();
-    double llabda = labda.toDouble();
+    double llambda = lambda.toDouble();
     if(kk < 1)
     {
         ui->textBrowser->setText("Введите k >= 1");
         return;
     }
-    if(llabda <= 0.0)
+    if(llambda <= 0.0)
     {
-        ui->textBrowser->setText("Введите labda > 0");
+        ui->textBrowser->setText("Введите lambda > 0");
         return;
     }
 
@@ -257,10 +267,23 @@ void MainWindow::on_pushButton_2_clicked()
     //Пробегаем по всем точкам
     for (double X = i; X <= j; X += h) {
         x[ii] = X;
-        y[ii] = fobj->func_erlang_cdf(X, kk, llabda);
+        y[ii] = fobj->func_erlang_cdf(X, kk, llambda);
         ii++;
     }
     show_cdf(x, y, aa, bb);
+
+    QVector<double> xx(N);
+    QVector<double> yy(N);
+    //Вычисляем наши данные
+    ii=0;
+    //Пробегаем по всем точкам
+    for (double X = i; X <= j; X += h) {
+        xx[ii] = X;
+        yy[ii] = fobj->func_erlang_pdf(fobj->func_erlang_cdf, X ,0.002, kk, llambda);
+        ii++;
+    }
+
+    show_pdf(xx, yy, aa, bb);
 
 }
 

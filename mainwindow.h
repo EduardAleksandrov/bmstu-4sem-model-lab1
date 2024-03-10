@@ -19,6 +19,8 @@ public:
     static double func_cdf(double x);
     static double func_pdf(double fun(double), double x, double h);
     static double func_erlang_cdf(double x, int k, double labda);
+    static double func_erlang_pdf(double fun(double, int, double), double x, double h, int k, double labda);
+
     void show_cdf(QVector<double>, QVector<double>, double, double);
     void show_pdf(QVector<double>, QVector<double>, double, double);
 

@@ -19,6 +19,8 @@ public:
 
 
     double (*func_erlang_cdf)(double, int, double);
+    double (*func_erlang_pdf)(double fun(double, int, double), double, double, int, double);
+
 
 signals:
 
