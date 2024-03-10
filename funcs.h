@@ -14,6 +14,8 @@ public:
     double getM();
     double (*func_cdf)(double);
     double (*func_pdf)(double fun(double), double , double);
+    void setN(double);
+    void setM(double);
 
 signals:
 

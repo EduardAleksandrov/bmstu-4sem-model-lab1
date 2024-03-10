@@ -13,10 +13,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    fobj = new Funcs(this, 5, 8); // задаем n, m
+    fobj = new Funcs(this); // задаем n, m
     fobj->func_cdf = func_cdf;
     fobj->func_pdf = func_pdf;
-    qDebug() << fobj->getN() << " " << fobj->getM() << fobj->func_cdf(8)<< " "<< fobj->func_pdf(fobj->func_cdf,8,0.002);
+//    qDebug() << fobj->getN() << " " << fobj->getM() << fobj->func_cdf(8)<< " "<< fobj->func_pdf(fobj->func_cdf,8,0.002);
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +40,9 @@ double MainWindow::func_pdf(double fun(double), double x, double h)
 
 void MainWindow::on_pushButton_clicked()
 {
+    fobj->setN(5);
+    fobj->setM(8);
+
     ui->textBrowser->clear();
     QString a = ui->lineEdit->text();
     QString b = ui->lineEdit_2->text();

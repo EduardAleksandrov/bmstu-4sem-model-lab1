@@ -17,3 +17,12 @@ double Funcs::getM()
 {
     return m;
 }
+
+void Funcs::setN(double nn)
+{
+    n = nn;
+}
+void Funcs::setM(double mm)
+{
+    m = mm;
+}
