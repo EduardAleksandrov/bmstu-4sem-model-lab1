@@ -17,6 +17,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     static double func_cdf(double x);
+    static double func_cdf_v2(double x);
     static double func_pdf(double fun(double), double x, double h);
     static double func_erlang_cdf(double x, int k, double labda);
     static double func_erlang_pdf(double fun(double, int, double), double x, double h, int k, double labda);

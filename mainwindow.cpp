@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->radioButton->setChecked(true);
+
     fobj = new Funcs(this); // задаем n, m
     fobj->func_cdf = func_cdf;
     fobj->func_pdf = func_pdf;
@@ -27,7 +29,11 @@ MainWindow::~MainWindow()
 double MainWindow::func_cdf(double x)
 {
     double f = pow(x,2)/64; // 0 8
-//    double f = (x-5)/(8-5);   // 5 8
+    return f;
+}
+double MainWindow::func_cdf_v2(double x)
+{
+    double f = (x-5)/(8-5);   // 5 8
     return f;
 }
 
@@ -64,8 +70,21 @@ int MainWindow::factorial(int num)
 
 void MainWindow::on_pushButton_clicked()
 {
-    fobj->setN(0);
-    fobj->setM(8);
+//    fobj->setN(5);
+//    fobj->setM(8);
+
+    if(ui->radioButton->isChecked())
+    {
+        fobj->setN(0);
+        fobj->setM(8);
+        fobj->func_cdf = func_cdf;
+    }
+    if(ui->radioButton_2->isChecked())
+    {
+        fobj->setN(5);
+        fobj->setM(8);
+        fobj->func_cdf = func_cdf_v2;
+    }
 
     ui->textBrowser->clear();
     QString a = ui->lineEdit->text();
